@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI辦公室應用 - 讓工作變得更聰明！</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100vh;
+            display: none;
+            padding: 60px;
+            position: relative;
+            background: linear-gradient(135deg, 
+                rgba(255,255,255,0.95) 0%, 
+                rgba(240,248,255,0.95) 100%);
+            backdrop-filter: blur(10px);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-content {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            color: #34495e;
+            margin: 1.5rem 0;
+        }
+
+        h4 {
+            font-size: 1.5rem;
+            color: #34495e;
+            margin: 1rem 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(102,126,234,0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(102,126,234,0.2);
+        }
+
+        .emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .custom-img {
+        width: 60px;  /* 設定圖片寬度 */
+        height: 60px; /* 設定圖片高度 */
+        border-radius: 50%; /* 設定為完全圓形 */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* 增加陰影，提升立體感 */
+}
+
+
+        .feature-list {
+            text-align: left;
+            margin: 1rem 0;
+        }
+
+        .feature-list li {
+            margin: 0.8rem 0;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: #27ae60;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .prompt-box {
+            background: linear-gradient(135deg, #E9E9F7 0%, #E4E4F7 100%);
+            border-left: 5px solid #667eea;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+.prompt-container {
+    display: flex;
+    justify-content: space-between; /* 讓兩個欄位平均分布 */
+    gap: 20px; /* 控制間距 */
+}
+
+.prompt-box2 {
+    width: 48%; /* 讓兩個框各佔約一半的空間 */
+            background: linear-gradient(135deg, #E9E9F7 0%, #E4E4F7 100%);
+            border-left: 5px solid #667eea;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+}
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border-left: 5px solid #f39c12;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-left: 5px solid #27ae60;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            text-align: left;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(102,126,234,0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102,126,234,0.4);
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            backdrop-filter: blur(10px);
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .wrong { color: #e74c3c; }
+        .correct { color: #27ae60; }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px 20px;
+            }
+            
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+            
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="floating-elements">
+            <div class="floating-circle" style="width: 100px; height: 100px; top: 10%; left: 10%; animation-delay: 0s;"></div>
+            <div class="floating-circle" style="width: 150px; height: 150px; top: 60%; right: 10%; animation-delay: 2s;"></div>
+            <div class="floating-circle" style="width: 80px; height: 80px; bottom: 20%; left: 20%; animation-delay: 4s;"></div>
+        </div>
+
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: 標題頁 -->
+        <div class="slide active">
+            <div class="slide-content">
+                <h1>🤖 AI辦公室應用</h1>
+                <h2>讓工作變得更聰明！</h2>
+                <div style="margin-top: 3rem;">
+                    <p style="font-size: 1.5rem; color: #2c3e50;">報告者：鄭茹卉  Suzy</p>
+                    <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 2rem;">
+                        <span class="emoji">💡</span>
+                        <span class="emoji">🚀</span>
+                        <span class="emoji">⚡</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: AI是神隊友 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>🏨 AI是神隊友</h2>
+                <div class="grid">
+                    <div class="card">
+                        <span class="emoji">🎯</span>
+                        <h3>問題解決顧問</h3>
+                        <p>提供效率優化建議</p>
+                    </div>
+                    <div class="card">
+                        <span class="emoji">📊</span>
+                        <h3>數據分析師</h3>
+                        <p>分析成本費用差異原因</p>
+                    </div>
+                    <div class="card">
+                        <span class="emoji">🌍</span>
+                        <h3>多語言翻譯官</h3>
+                        <p>外語信件或網頁翻譯</p>
+                    </div>
+                    <div class="card">
+                        <span class="emoji">📚</span>
+                        <h3>學習好夥伴</h3>
+                        <p>解釋複雜概念、教學新技能</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: 日常辦公應用場景 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>💡 日常辦公的AI應用場景</h2>
+                <div class="grid">
+                    <div class="card">
+                        <span class="emoji">📋</span>
+                        <h3>資料整理</h3>
+                        <p>分類、統計、視覺化</p>
+                    </div>
+                    <div class="card">
+                        <span class="emoji">📝</span>
+                        <h3>整理會議記錄</h3>
+                        <p>自動摘要重點</p>
+                    </div>
+                    <div class="card">
+                        <span class="emoji">📊</span>
+                        <h3>製作簡報</h3>
+                        <p>快速生成大綱和內容</p>
+                    </div>
+                    <div class="card">
+                        <span class="emoji">⚖️</span>
+                        <h3>法規查詢</h3>
+                        <p>解釋法條和政策</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3-1: 常用AI工具 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>🔧常用AI工具</h2>
+                <div class="grid">
+                    <div class="card">
+                        <img src="https://play-lh.googleusercontent.com/pmSUjgHvyOXOast5EQt-Bmc9YGB__tPL_aH8SQB2nwkP32GvSq0GlOlThfDWfa8TdVbU=w256" alt="ChatGPT" class="custom-img">
+                        <h4>ChatGPT</h4>
+                        <p>🧠開發商：OpenAI</p>
+                        <p>👍特點：創意寫作能力強</p>
+                        <p>💔缺點：容易天馬行空及失去上下文語意</p>
+
+                    </div>
+                    <div class="card">
+                        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/8b/15/ca/8b15ca05-4388-fcab-f6c3-3c9c7b5291b9/AppIcon-0-1x_U007epad-0-0-0-8-0-0-0-85-220-0.png/460x0w.webp" alt="Gemini" class="custom-img">
+                        <h4>Gemini</h4>
+                        <p>🧠開發商：Google</p>
+                        <p>👍特點：搜尋功能強大、結合Google產品</p>
+                        <p>💔缺點：iOS 版本功能尚未齊全</p>
+                    </div>
+                    <div class="card">
+                        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/29/00/a5/2900a5f6-74e9-9841-98ba-ef900f046c48/AppIcon_Production-0-1x_U007epad-0-4-85-220-0.png/460x0w.webp" alt="Copilot" class="custom-img">
+                        <h4>Copilot</h4>
+                        <p>🧠開發商：Microsoft</p>
+                        <p>👍特點：微軟產品整合提升生產力</p>
+                        <p>💔缺點：Win11或365訂閱才能發揮效能</p>
+                    </div>
+                    <div class="card">
+                        <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/51/9e/d4/519ed4fa-ebc1-ec5a-4b4d-415748c74162/AppIcon-0-0-1x_U007epad-0-1-85-220.png/460x0w.webp" alt="Claude" class="custom-img">
+                        <h4>Claude</h4>
+                        <p>🧠開發商：Anthropic</p>
+                        <p>👍特點：強調安全性與長上下文理解</p>
+                        <p>💔缺點：免費額度少，中文支援較弱</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: 有效提示詞 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>🎯 有效提示詞怎麼寫</h2>
+                <div style="text-align: left; max-width: 800px; margin: 0 auto;">
+                    <h3>黃金公式：5W1H + 角色設定</h3>
+                    <div class="prompt-box">
+                        <h3><strong>基本結構：</strong>你是誰 + 我要什麼 + 具體要求 + 輸出格式</h3>
+                    </div>
+                    <h3>✅ 好提示詞的特徵</h3>
+                    <ul class="feature-list">
+                        <li><strong>明確角色</strong>：「你是一位旅館財務人員」</li>
+                        <li><strong>具體任務</strong>：「幫我分析本期與上期的費用差異」</li>
+                        <li><strong>詳細要求</strong>：「包含百分比變化、主要原因分析」</li>
+                        <li><strong>格式指定</strong>：「以表格形式呈現，並提供3個改善建議」</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: 實用提示詞模板 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>🔥 實用提示詞模板</h2>
+                <div style="text-align: left; max-width: 900px; margin: 0 auto;">
+                    <h3>📊 數據分析模板</h3>
+                    <div class="prompt-box">
+你是一位[<strong>角色設定</strong>]，請分析以下[資料類型]：<br>
+[貼上資料]<br><br>
+請提供：<br>
+1. 每月的數據統整<br>
+2. 差異數標註為百分比<br>
+3. 差異原因說明<br>
+4. 以表格呈現
+                    </div>
+                    <div class="warning-box">
+                        <strong>❌ 避免的錯誤</strong>
+                        <ul class="feature-list">
+                            <li>太籠統：「幫我分析資料」</li>
+                            <li>沒有背景：直接丟資料沒說明</li>
+                            <li>沒有格式要求：不知道要什麼樣的輸出</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: 實例1 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>🌏 實例1：計算各地區旅客人數</h2>
+                <div style="text-align: left; max-width: 900px; margin: 0 auto;">
+                    <div class="card">
+                        <h3>情境：每月旅宿網填報的各國籍旅客人數</h3>
+                    </div>
+                    <div class="prompt-box">
+<strong>提示詞範例：</strong><br><br>
+這是一份包含旅客國籍的清單，請幫我利用比率計算出總人數[貼上數字]的各地區人數，地區依據[地區清單]來分類<br><br>
+資料：[貼上國籍清單]
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: 實例2 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>📮 實例2：地址自動帶出郵遞區號</h2>
+                <div style="text-align: left; max-width: 900px; margin: 0 auto;">
+                    <div class="card">
+                        <h3>情境：寄送員工扣繳憑單需要完整地址</h3>
+                    </div>
+<div class="prompt-container">
+    <div class="prompt-box2">
+        <strong>第一步 - 郵遞區號查詢：</strong><br>
+        你是台灣郵務，請為以下地址補上正確的3+2郵遞區號：<br>
+        [貼上地址清單]<br><br>
+        請以「郵遞區號 + 完整地址」格式輸出，並製作成表格<br>
+        如果地址不完整或有疑問，請特別標註
+    </div>
+    <div class="prompt-box2">
+        <strong>第二步 - 合併列印指導：</strong><br>
+        請提供在Word中使用合併列印功能的詳細步驟：<br>
+        1. 資料來源準備（Excel格式）<br>
+        2. 設定合併列印文件<br>
+        3. 插入合併欄位<br>
+        4. 預覽和完成合併<br>
+        請用簡單易懂的方式說明，包含注意事項
+
+    </div>
+</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: 實例3 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>💰 實例3：費用分析</h2>
+                <div style="text-align: left; max-width: 900px; margin: 0 auto;">
+                    <div class="card">
+                        <h3>情境：分析每月費用支出，找出差異原因</h3>
+                    </div>
+                    <div class="prompt-box">
+<strong>提示詞範例：</strong><br>
+你是旅店財務，請分析這份[年月A]及[年月B]的費用支出明細：<br>
+[貼上費用資料]<br><br>
+請執行：<br>
+1. 依據供應商及類別計算出兩期差異金額<br>
+2. 分析可能的差異原因<br>
+3. 將供應商及類別資料來源的編號備註出來<br>
+4. 確保兩期資料總計金額的正確性<br><br>
+格式：先用表格呈現數據，再用條列說明分析結果
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: AI的限制 - 資訊正確性 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>⚠️ AI的限制：提供的資訊並非完全正確</h2>
+                <div class="grid">
+                    <div class="card">
+                        <span class="emoji">🤔</span>
+                        <h3>為什麼會出錯？</h3>
+                        <ul class="feature-list">
+                            <li>可能有過時資訊</li>
+                            <li>複雜計算容易出現錯誤</li>
+                            <li>對特定領域的專業知識有限</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <span class="emoji">✅</span>
+                        <h3>如何避免？</h3>
+                        <ul class="feature-list">
+                            <li><strong>交叉驗證</strong>：重要資訊多方查證</li>
+                            <li><strong>分段確認</strong>：複雜任務拆解驗證</li>
+                            <li><strong>專業判斷</strong>：保持批判性思考</li>
+                            <li><strong>實際測試</strong>：數據分析結果要抽查</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: 資訊保密與倫理 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>🔒 資訊保密與倫理</h2>
+                <div style="text-align: left; max-width: 900px; margin: 0 auto;">
+                    <h3>敏感資料處理原則</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>❌ 絕對不上傳</th>
+                                <th>✅ 可以諮詢</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="wrong">個人資料、財務機密、商業機密</td>
+                                <td class="correct">一般性問題、匿名化案例、工作方法</td>
+                            </tr>
+                            <tr>
+                                <td class="wrong">具體金額、人名、合約內容</td>
+                                <td class="correct">製作報告的架構和要點</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="warning-box">
+                        <strong>建立內部規範：</strong>
+                        <ul class="feature-list">
+                            <li>制定AI使用政策</li>
+                            <li>員工訓練和意識培養</li>
+                            <li>定期檢視使用情況</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: AI不會取代你 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>🤝 AI不會取代你</h2>
+                <div class="grid">
+                    <div class="card">
+                        <span class="emoji">💪</span>
+                        <h3>AI無法取代『人』的價值</h3>
+                        <div style="text-align: left;">
+                            <strong>🥰情感智慧</strong>
+                            <ul class="feature-list">
+                                <li>人與人溫暖互動</li>
+                                <li>團隊合作和溝通</li>
+                                <li>危機處理的應變能力</li>
+                            </ul>
+                            <strong>🧑‍💻專業判斷</strong>
+                            <ul class="feature-list">
+                                <li>基於經驗的決策</li>
+                                <li>複雜情況的權衡</li>
+                                <li>道德和倫理考量</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <span class="emoji">🚀</span>
+                        <h3><strong>AI + 人 = 超強組合</strong></h3>
+                        <div style="text-align: left;">
+                            <strong>🤖AI負責：</strong><br>
+                            <ul class="feature-list">
+                            <li>重複性工作</li>
+                            <li>數據處理</li>
+                            <li>初步分析</li>
+                            </ul>
+                             <strong>👩‍🦰你負責：</strong><br>
+                              <ul class="feature-list">
+                                <li>創意發想</li>
+                                <li>決策判斷</li>
+                                <li>人際互動</li>
+                              </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: 結語 -->
+        <div class="slide">
+            <div class="slide-content">
+                <h1>🎯 面對AI的心態</h1>
+                <div class="grid">
+                    <div class="card">
+                        <span class="emoji">🛠️</span>
+                        <p><strong>將AI視為強大的工具，而非威脅</strong></p>
+                    </div>
+                    <div class="card">
+                        <span class="emoji">📚</span>
+                        <p><strong>持續學習新的AI應用技巧</strong></p>
+                    </div>
+                    <div class="card">
+                        <span class="emoji">🤝</span>
+                        <p><strong>善用AI來放大你的專業能力</strong></p>
+                    </div>
+                    <div class="card">
+                        <span class="emoji">💡</span>
+                        <p><strong>專注在更有價值的創造性工作</strong></p>
+                    </div>
+                </div>
+                <div style="margin-top: 3rem;">
+                    <h2 style="color: #667eea;">AI是你的助手，絕對不會取代你。</h2>
+                    <p style="font-size: 1.5rem; color: #2c3e50; margin-top: 2rem;">謝謝聆聽！</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousSlide()">← 上一頁</button>
+        <button class="nav-btn" onclick="nextSlide()">下一頁 →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // 鍵盤控制
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+
+        // 觸控支援
+        let startX = 0;
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            let endX = e.changedTouches[0].clientX;
+            let diff = startX - endX;
+            
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    previousSlide();
+                }
+            }
+        });
+
+        // 自動播放功能（可選）
+        let autoPlay = false;
+        if (autoPlay) {
+            setInterval(nextSlide, 10000); // 每10秒自動換頁
+        }
+    </script>
+</body>
+</html>
